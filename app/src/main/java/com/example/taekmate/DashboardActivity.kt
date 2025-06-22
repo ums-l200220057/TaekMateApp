@@ -14,6 +14,7 @@ import com.google.gson.Gson
 import android.widget.LinearLayout
 import android.view.View
 import android.widget.Button
+import android.util.Log
 
 data class Category(val name: String, val iconRes: Int)
 
@@ -24,6 +25,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var cartBar: LinearLayout
     private lateinit var tvCartItemCount: TextView
     private lateinit var tvCartTotal: TextView
+    private lateinit var dbHelper: DBHelper // <-- kita buat satu instance global
 
     private fun addToCart(cartItem: CartItem) {
         val userPref = getSharedPreferences("user_session", MODE_PRIVATE)
@@ -36,7 +38,6 @@ class DashboardActivity : AppCompatActivity() {
         sharedPref.edit().putString("cart_items", gson.toJson(itemList)).apply()
         showCartBar()
     }
-
 
     private fun showCartBar() {
         val userPref = getSharedPreferences("user_session", MODE_PRIVATE)
@@ -60,6 +61,14 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
+        // Inisialisasi DB hanya sekali
+        dbHelper = DBHelper(this)
+        dbHelper.writableDatabase // Paksa buat database kalau belum ada
+        SeedData().seedItems(this) // Isi database kalau kosong
+
+        // DEBUG: cek isi database
+        Log.d("DEBUG_DB", "Jumlah item: ${dbHelper.getAllItems().size}")
+
         cartBar = findViewById(R.id.cartBar)
         tvCartItemCount = findViewById(R.id.tvCartItemCount)
         tvCartTotal = findViewById(R.id.tvCartTotal)
@@ -70,8 +79,6 @@ class DashboardActivity : AppCompatActivity() {
 
         showCartBar()
 
-        SeedData().seedItems(this)
-
         val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
         val username = sharedPref.getString("username", "User")
         val greetingTextView = findViewById<TextView>(R.id.tvGreeting)
@@ -79,12 +86,12 @@ class DashboardActivity : AppCompatActivity() {
 
         val logoutBtn = findViewById<Button>(R.id.btnLogout)
         logoutBtn.setOnClickListener {
-            val sharedPref = getSharedPreferences("user_session", MODE_PRIVATE)
             sharedPref.edit().clear().apply()
             startActivity(Intent(this, SignInActivity::class.java))
             finish()
         }
 
+        // Carousel
         val viewPager = findViewById<ViewPager2>(R.id.viewPagerCarousel)
         val realImages = listOf(
             R.drawable.logo_taekmate,
@@ -92,14 +99,11 @@ class DashboardActivity : AppCompatActivity() {
             R.drawable.logo_taekmate
         )
         val imageList = listOf(realImages.last()) + realImages + listOf(realImages.first())
-
         val carouselAdapter = CarouselAdapter(imageList)
         viewPager.adapter = carouselAdapter
         viewPager.setCurrentItem(1, false)
-
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
                 viewPager.post {
                     if (position == imageList.size - 1) {
                         viewPager.setCurrentItem(1, false)
@@ -109,7 +113,6 @@ class DashboardActivity : AppCompatActivity() {
                 }
             }
         })
-
         val handler = android.os.Handler()
         val runnable = object : Runnable {
             override fun run() {
@@ -120,14 +123,10 @@ class DashboardActivity : AppCompatActivity() {
         }
         handler.postDelayed(runnable, 3000)
 
-        val dbHelper = DBHelper(this)
-
-// Ambil 4 item acak dari masing-masing kategori
+        // Suggestion items
         val seragamList = dbHelper.getItemsByCategory("Seragam").shuffled().take(2)
         val protectorList = dbHelper.getItemsByCategory("Protector").shuffled().take(2)
         val alatLatihanList = dbHelper.getItemsByCategory("Alat Latihan").shuffled().take(2)
-
-// Gabungkan untuk suggestion list
         val suggestionList = seragamList + protectorList + alatLatihanList
 
         // Kategori
@@ -147,7 +146,7 @@ class DashboardActivity : AppCompatActivity() {
         }
         rvCategory.adapter = categoryAdapter
 
-        // Main item list (Grid 2 kolom)
+        // Grid 2 kolom
         rvDashboard = findViewById(R.id.rvDashboard)
         rvDashboard.layoutManager = GridLayoutManager(this, 2)
         rvDashboard.adapter = DashboardAdapter(suggestionList) { item, action ->
@@ -175,7 +174,6 @@ class DashboardActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-
                 else -> false
             }
         }

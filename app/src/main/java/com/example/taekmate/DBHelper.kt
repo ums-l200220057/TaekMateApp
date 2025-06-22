@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.content.ContentValues
 
 
-class DBHelper(context: Context) : SQLiteOpenHelper(context, "TaekMateDB", null, 38) {
+class DBHelper(context: Context) : SQLiteOpenHelper(context, "TaekMateDB", null, 39) {
 
     override fun onCreate(db: SQLiteDatabase) {
         // Table user
@@ -83,9 +83,12 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "TaekMateDB", null,
 
     fun getItemsByCategory(category: String): List<Item> {
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM items WHERE category = ?", arrayOf(category))
-        val items = mutableListOf<Item>()
+        val cursor = db.rawQuery(
+            "SELECT * FROM items WHERE category = ?",
+            arrayOf(category)  // JANGAN lowercase
+        )
 
+        val items = mutableListOf<Item>()
         if (cursor.moveToFirst()) {
             do {
                 items.add(

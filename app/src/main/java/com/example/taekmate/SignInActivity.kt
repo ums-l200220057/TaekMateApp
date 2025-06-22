@@ -14,6 +14,7 @@ class SignInActivity : AppCompatActivity() {
         setContentView(R.layout.activity_signin)
 
         dbHelper = DBHelper(this)
+        SeedData().seedItems(this)
 
         val usernameInput = findViewById<EditText>(R.id.usernameInput)
         val passwordInput = findViewById<EditText>(R.id.passwordInput)

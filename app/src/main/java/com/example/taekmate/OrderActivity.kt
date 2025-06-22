@@ -16,6 +16,8 @@ class OrderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order)
 
+        SeedData().seedItems(this)
+
         rvCart = findViewById(R.id.rvCart)
         rvCart.layoutManager = LinearLayoutManager(this)
 
