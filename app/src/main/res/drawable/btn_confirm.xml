@@ -1,0 +1,6 @@
+<!-- res/drawable/button_confirm_bg.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#673AB7" /> <!-- Warna kuning/oranye, bisa diganti -->
+    <corners android:radius="30dp" /> <!-- Radius sudut -->
+</shape>

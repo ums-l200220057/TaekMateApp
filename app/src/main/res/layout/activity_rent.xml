@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:id="@+id/tvRentInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Silakan ambil barang
+                            di Sekretariat Taekwondo"
+        android:fontFamily="@font/aclonica_regular"
+        android:textSize="20dp"
+        android:textColor="#522C95"
+        android:layout_marginBottom="24dp"
+        android:textAlignment="center" />
+
+    <!-- Ganti dengan gambar barcode kamu -->
+    <ImageView
+        android:id="@+id/ivBarcode"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/barcodewasap"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:fontFamily="@font/varelaround_regular"
+        android:textSize="18dp"
+        android:text="Konfirmasi Sewa"
+        android:background="@drawable/btn_confirm" />
+</LinearLayout>
